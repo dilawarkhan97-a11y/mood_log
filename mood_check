@@ -1,0 +1,10 @@
+import streamlit as st
+
+st.title("Mood App")
+
+st.header("Emotional log")
+
+Date= st.date_input("What is the date of emotions?")
+Event = st.text_input("What event influenced your emotions?")
+Emotions = st.text_input("what emotions did you feel?")
+Coping = st.text_input("How did you cope or block these emotions?")
