@@ -1,4 +1,2 @@
 
-mood_log/
- ├── app.py
- └── requirements.txt
+streamlit>=1.37
