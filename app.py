@@ -1,11 +1,12 @@
 import streamlit as st
-from supabase import create_client
+from postgrest import PostgrestClient
 from datetime import datetime
 
-# Connect to your Supabase database
-url = st.secrets["SUPABASE_URL"]
+# Connect to Supabase REST endpoint
+url = st.secrets["SUPABASE_URL"] + "/rest/v1"
 key = st.secrets["SUPABASE_KEY"]
-supabase = create_client(url, key)
+
+client = PostgrestClient(url, headers={"apikey": key, "Authorization": f"Bearer {key}"})
 
 st.title("Mood App")
 st.header("Emotional Log")
@@ -15,14 +16,30 @@ Event = st.text_input("What event influenced your emotions?")
 Emotion = st.text_input("What emotions did you feel?")
 Coping = st.text_input("How did you cope with these emotions?")
 
-if st.button("Save Entry"):
-    data = {
+if st.button("Save entry"):
+    row = {
         "timestamp": str(Date),
         "event": Event,
         "emotion": Emotion,
-        "coping": Coping
+        "coping": Coping,
     }
-    supabase.table("moods").insert(data).execute()
-    st.success("Entry saved to SQL!")
+
+    try:
+        response = client.from_("moods").insert(row).execute()
+        st.write("Insert response:", response)
+        st.success("Saved to SQL!")
+    except Exception as e:
+        st.error("Insert error:")
+        st.exception(e)
+
+st.markdown("---")
+
+if st.button("Show saved logs"):
+    try:
+        data = client.from_("moods").select("*").execute()
+        st.write(data)
+    except Exception as e:
+        st.error("Select error:")
+        st.exception(e)
 
 
