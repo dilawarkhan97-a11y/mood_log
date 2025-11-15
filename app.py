@@ -1,46 +1,38 @@
 import streamlit as st
-from postgrest import PostgrestClient
-
+import json
 from datetime import datetime
 
-# Connect to Supabase REST endpoint
-url = st.secrets["SUPABASE_URL"] + "/rest/v1"
-key = st.secrets["SUPABASE_KEY"]
+FILE= "mood_log.json"
 
-client = PostgrestClient(url, headers={"apikey": key, "Authorization": f"Bearer {key}"})
+def load_data():
+    try:
+        with open(FILE, "r") as f:
+            return json.load(f)
+    except(FileNotFoundError, json.JSONDecodeError):
+        return[]
+def save_entry(entry):
+    data=__load_data()
+    data.appent(entry)
+    with open(FILE, "w") as f:
+        json.dump(data, f, indent=4)
+        
+st.title("Mood App(JSON)")
 
-st.title("Mood App")
-st.header("Emotional Log")
+st.header("Emotional log")
 
-Date = st.date_input("Date of emotions")
-Event = st.text_input("What event influenced your emotions?")
-Emotion = st.text_input("What emotions did you feel?")
-Coping = st.text_input("How did you cope with these emotions?")
+mood = st.selectbox("Mood", ["Great"], ["Good"],["Normal"],["Sad"],["Awful"])
+note =st.text_area("Event")
 
-if st.button("Save entry"):
-    row = {
-        "timestamp": str(Date),
-        "event": Event,
-        "emotion": Emotion,
-        "coping": Coping,
+if st.button("Save"):
+    entry ={
+        "time" : datatime.now().isoformat(timespec="seconds"),
+        "mood" : mood,
+        "Event" : Event
     }
+    save_entry()
+    st.success("Entry Saved")
 
-    try:
-        response = client.from_("moods").insert(row).execute()
-        st.write("Insert response:", response)
-        st.success("Saved to SQL!")
-    except Exception as e:
-        st.error("Insert error:")
-        st.exception(e)
-
-st.markdown("---")
-
-if st.button("Show saved logs"):
-    try:
-        data = client.from_("moods").select("*").execute()
-        st.write(data)
-    except Exception as e:
-        st.error("Select error:")
-        st.exception(e)
+st.head("Previous entries")
+st.json(load_data())
 
 
