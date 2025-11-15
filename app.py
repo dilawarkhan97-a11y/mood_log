@@ -1,5 +1,6 @@
 import streamlit as st
 from postgrest import PostgrestClient
+
 from datetime import datetime
 
 # Connect to Supabase REST endpoint
