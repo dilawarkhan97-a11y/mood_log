@@ -11,8 +11,8 @@ def load_data():
     except(FileNotFoundError, json.JSONDecodeError):
         return[]
 def save_entry(entry):
-    data=__load_data()
-    data.appent(entry)
+    data=load_data()
+    data.append(entry)
     with open(FILE, "w") as f:
         json.dump(data, f, indent=4)
         
@@ -20,19 +20,18 @@ st.title("Mood App(JSON)")
 
 st.header("Emotional log")
 
-mood = st.selectbox("Mood", ["Great"], ["Good"],["Normal"],["Sad"],["Awful"])
+mood = st.selectbox("Mood", ["Great", "Good","Normal","Sad","Awful"])
 note =st.text_area("Event")
 
 if st.button("Save"):
     entry ={
-        "time" : datatime.now().isoformat(timespec="seconds"),
+        "time" : datetime.now().isoformat(timespec="seconds"),
         "mood" : mood,
-        "Event" : Event
+        "Event" : note
     }
-    save_entry()
+    save_entry(entry)
     st.success("Entry Saved")
 
-st.head("Previous entries")
+st.subheader("Previous entries")
 st.json(load_data())
-
 
