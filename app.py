@@ -1,10 +1,12 @@
 import streamlit as st
 import json
 from datetime import datetime
-
-FILE= "mood_log.json"
+import os
+FILE= os.path.join(os.path.dirname(__file__), "mood_log.json")
 
 def load_data():
+    if not os.path.exists(FILE):
+        return []
     try:
         with open(FILE, "r") as f:
             return json.load(f)
